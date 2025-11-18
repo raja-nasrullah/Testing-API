@@ -1,0 +1,68 @@
+﻿@page "/student"
+@using ClassLibrary
+@inject IStudentService StudentService
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+
+<h1>Students</h1>
+
+@if (students == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Age</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var student in students)
+            {
+                <tr>
+                    <td>@student.Id</td>
+                    <td>@student.Name</td>
+                    <td>@student.Description</td>
+                    <td>@student.Age</td>
+                    <td>
+                        <button class="btn btn-danger btn-sm" @onclick="() => DeleteStudent(student.Id)">Delete</button>
+                        <button class="btn btn-primary btn-sm" @onclick="() => NavigateToUpdate(student.Id)">Update</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+
+}
+
+@code {
+    private List<Student> students;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadStudents();
+    }
+
+    private async Task LoadStudents()
+    {
+        students = (await StudentService.GetStudentsAsync()).ToList();
+    }
+
+    private async Task DeleteStudent(int id)
+    {
+        await StudentService.DeleteStudentAsync(id);
+        await LoadStudents();
+    }
+
+    private void NavigateToUpdate(int id)
+    {
+        NavigationManager.NavigateTo($"/editstudent/{id}");
+    }
+}

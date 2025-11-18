@@ -1,0 +1,46 @@
+﻿@page "/student/get"
+@inject IStudentService StudentService
+@using ClassLibrary
+
+<h3>Find Student by ID</h3>
+
+<div class="mb-3">
+    <label for="studentId">Enter Student ID:</label>
+    <input type="number" @bind="studentId" class="form-control" />
+    <button class="btn btn-primary mt-2" @onclick="GetStudentById">Search</button>
+</div>
+
+@if (student != null)
+{
+    <div class="card mt-4 p-3">
+        <h5>Student Details</h5>
+        <p><strong>ID:</strong> @student.Id</p>
+        <p><strong>Name:</strong> @student.Name</p>
+        <p><strong>Description:</strong> @student.Description</p>
+        <p><strong>Age:</strong> @student.Age</p>
+    </div>
+}
+else if (searched)
+{
+    <p class="text-danger">No student found with this ID.</p>
+}
+
+@code {
+    private int studentId;
+    private Student student;
+    private bool searched = false;
+
+    private async Task GetStudentById()
+    {
+        try
+        {
+            student = await StudentService.GetStudentByIdAsync(studentId);
+            searched = true;
+        }
+        catch
+        {
+            student = null;
+            searched = true;
+        }
+    }
+}
